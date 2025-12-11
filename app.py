@@ -1,11 +1,13 @@
 import streamlit as st
-import numpy as np  # Added missing import
+import numpy as np
 import os
 import glob
 import re
 from bs4 import BeautifulSoup
 import pandas as pd
 import io
+import zipfile
+from openpyxl.styles import Font, PatternFill, Alignment
 
 # ============================================================
 # 1. Caption pattern: Table X. Predicted/Expected Crash ... (Section 1)
@@ -54,7 +56,7 @@ PREDICTED_VARIANTS = {
 }
 
 # ============================================================
-# 2. Helpers (FIXED: numpy.int64 compatibility)
+# 2. Helpers
 # ============================================================
 def pick_first_present(variants, columns):
     """Return first variant present in columns, or None."""
@@ -120,7 +122,6 @@ def consolidate_tbl(df):
     if exp_pdo_col: cols_to_keep.append(exp_pdo_col)
     if exp_tot_col: cols_to_keep.append(exp_tot_col)
     
-    # FIXED: Use pd.isna() instead of .notnull() for numpy compatibility
     non_numeric_mask = df[seg_col].apply(lambda x: pd.to_numeric(str(x), errors='coerce')).isna()
     filtered_df = df.loc[non_numeric_mask, cols_to_keep].copy()
     
@@ -213,11 +214,77 @@ def append_total_row(df, id_col_name='Source File'):
     df = pd.concat([df, total_df], ignore_index=True)
     return df
 
+def create_individual_excel(raw_df, consolidated_df, filename):
+    """Create Excel file with two sheets: Original and Consolidated."""
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        raw_df.to_excel(writer, sheet_name='Original', index=False)
+        consolidated_df.to_excel(writer, sheet_name='Consolidated', index=False)
+        
+        # Format headers
+        workbook = writer.book
+        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+        header_font = Font(bold=True, color="FFFFFF")
+        
+        for sheet in workbook.sheetnames:
+            worksheet = workbook[sheet]
+            for cell in worksheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            
+            # Auto-fit columns
+            for column in worksheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = min(max_length + 2, 50)
+                worksheet.column_dimensions[column_letter].width = adjusted_width
+    
+    buffer.seek(0)
+    return buffer
+
+def create_batch_zip(results_data, inter_summary, seg_summary):
+    """Create a zip file containing all individual Excel files + batch summary."""
+    zip_buffer = io.BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        # Add individual Excel files
+        for filename, data in results_data.items():
+            excel_buffer = create_individual_excel(data['raw'], data['consolidated'], filename)
+            clean_filename = filename.replace('.html', '').replace('.htm', '')
+            zf.writestr(f"Individual Files/{clean_filename}_extracted.xlsx", excel_buffer.getvalue())
+        
+        # Add batch summary Excel
+        summary_buffer = io.BytesIO()
+        with pd.ExcelWriter(summary_buffer, engine='openpyxl') as writer:
+            if not inter_summary.empty:
+                inter_with_total = append_total_row(inter_summary, 'Source File')
+                inter_with_total.to_excel(writer, sheet_name='Intersection Crashes', index=False)
+            if not seg_summary.empty:
+                seg_with_total = append_total_row(seg_summary, 'Source File')
+                seg_with_total.to_excel(writer, sheet_name='Segment Crashes', index=False)
+        
+        summary_buffer.seek(0)
+        zf.writestr("Batch_Summary.xlsx", summary_buffer.getvalue())
+    
+    zip_buffer.seek(0)
+    return zip_buffer
+
 # ============================================================
-# 3. Streamlit App Logic (unchanged)
+# 3. Streamlit App
 # ============================================================
+st.set_page_config(page_title="Predictive Safety Scraper", layout="wide")
 st.title("🚗 Predictive Safety HTML Scraper")
 st.markdown("Upload HTML files containing crash frequency tables and extract Section 1 data.")
+
+if 'results_data' not in st.session_state:
+    st.session_state.results_data = {}
 
 uploaded_files = st.file_uploader(
     "Choose HTML files", 
@@ -227,12 +294,13 @@ uploaded_files = st.file_uploader(
 )
 
 if uploaded_files:
-    st.info(f"Found {len(uploaded_files)} file(s) to process.")
+    st.info(f"📁 Found {len(uploaded_files)} file(s) to process.")
     
     if st.button("🔄 Process Files", type="primary"):
         inter_summary = pd.DataFrame()
         seg_summary = pd.DataFrame()
         results = []
+        st.session_state.results_data = {}
         
         progress_bar = st.progress(0)
         status_text = st.empty()
@@ -246,9 +314,14 @@ if uploaded_files:
                 f.write(uploaded_file.getbuffer())
             
             try:
-                consolidated = extract_section1_df(temp_path)
-                consolidated = consolidate_tbl(consolidated)
+                raw_df = extract_section1_df(temp_path)
+                consolidated = consolidate_tbl(raw_df.copy())
                 consolidated = rename_special_rows(consolidated)
+                
+                st.session_state.results_data[filename] = {
+                    'raw': raw_df,
+                    'consolidated': consolidated
+                }
                 
                 inter_summary, seg_summary = update_summary_tables(
                     filename, consolidated, inter_summary, seg_summary
@@ -272,45 +345,114 @@ if uploaded_files:
             
             progress_bar.progress((i + 1) / len(uploaded_files))
         
+        status_text.text("✅ Processing complete!")
+        
+        # ============================================================
+        # PROCESSING SUMMARY
+        # ============================================================
         st.subheader("📊 Processing Summary")
         col1, col2, col3 = st.columns(3)
         with col1:
             successes = sum(1 for _, _, status in results if "SUCCESS" in status)
-            st.metric("Successful", successes)
+            st.metric("✅ Successful", successes)
         with col2:
-            st.metric("Total Files", len(uploaded_files))
+            st.metric("📁 Total Files", len(uploaded_files))
         with col3:
-            st.metric("Skipped/Errors", len(uploaded_files) - successes)
+            st.metric("⚠️ Skipped/Errors", len(uploaded_files) - successes)
         
-        if not inter_summary.empty:
-            st.subheader("📈 Intersection Crashes Summary")
-            inter_with_total = append_total_row(inter_summary, 'Source File')
-            st.dataframe(inter_with_total, use_container_width=True)
-            
-            csv_buffer = io.StringIO()
-            inter_with_total.to_csv(csv_buffer, index=False)
+        # ============================================================
+        # BATCH DOWNLOAD BUTTON (NEW)
+        # ============================================================
+        st.divider()
+        st.subheader("⚡ Batch Download All")
+        st.markdown("**Download everything at once:** All individual files + batch summary in a single ZIP archive")
+        
+        if st.session_state.results_data:
+            batch_zip = create_batch_zip(st.session_state.results_data, inter_summary, seg_summary)
             st.download_button(
-                "📥 Download Intersection Summary CSV",
-                csv_buffer.getvalue(),
-                f"intersection_crashes_summary.csv",
-                "text/csv"
+                label="📦 Download Complete Batch (ZIP)",
+                data=batch_zip.getvalue(),
+                file_name="Crash_Analysis_Complete_Batch.zip",
+                mime="application/zip",
+                key="batch_zip_download",
+                help="Contains all individual Excel files + batch summary"
             )
         
-        if not seg_summary.empty:
-            st.subheader("📈 Segment Crashes Summary")
-            seg_with_total = append_total_row(seg_summary, 'Source File')
-            st.dataframe(seg_with_total, use_container_width=True)
-            
-            csv_buffer = io.StringIO()
-            seg_with_total.to_csv(csv_buffer, index=False)
-            st.download_button(
-                "📥 Download Segment Summary CSV",
-                csv_buffer.getvalue(),
-                f"segment_crashes_summary.csv",
-                "text/csv"
-            )
+        # ============================================================
+        # INDIVIDUAL FILE DOWNLOADS
+        # ============================================================
+        st.divider()
+        st.subheader("📥 Individual File Downloads")
+        st.markdown("Download individual Excel files with Original and Consolidated sheets:")
         
+        if st.session_state.results_data:
+            cols = st.columns(3)
+            col_idx = 0
+            for filename, data in st.session_state.results_data.items():
+                with cols[col_idx % 3]:
+                    excel_buffer = create_individual_excel(
+                        data['raw'], 
+                        data['consolidated'], 
+                        filename
+                    )
+                    
+                    clean_filename = filename.replace('.html', '').replace('.htm', '')
+                    
+                    st.download_button(
+                        label=f"📊 {clean_filename}",
+                        data=excel_buffer.getvalue(),
+                        file_name=f"{clean_filename}_extracted.xlsx",
+                        key=f"individual_{filename}",
+                        help=f"Original and Consolidated sheets for {filename}"
+                    )
+                col_idx += 1
+        
+        # ============================================================
+        # SUMMARY TABLE DOWNLOADS
+        # ============================================================
+        st.divider()
+        st.subheader("📈 Batch Summary Tables")
+        
+        col_inter, col_seg = st.columns(2)
+        
+        with col_inter:
+            if not inter_summary.empty:
+                st.write("**Intersection Crashes Summary**")
+                inter_with_total = append_total_row(inter_summary, 'Source File')
+                st.dataframe(inter_with_total, use_container_width=True)
+                
+                csv_buffer = io.StringIO()
+                inter_with_total.to_csv(csv_buffer, index=False)
+                st.download_button(
+                    "📥 Download CSV",
+                    csv_buffer.getvalue(),
+                    "intersection_summary.csv",
+                    "text/csv",
+                    key="inter_csv"
+                )
+        
+        with col_seg:
+            if not seg_summary.empty:
+                st.write("**Segment Crashes Summary**")
+                seg_with_total = append_total_row(seg_summary, 'Source File')
+                st.dataframe(seg_with_total, use_container_width=True)
+                
+                csv_buffer = io.StringIO()
+                seg_with_total.to_csv(csv_buffer, index=False)
+                st.download_button(
+                    "📥 Download CSV",
+                    csv_buffer.getvalue(),
+                    "segment_summary.csv",
+                    "text/csv",
+                    key="seg_csv"
+                )
+        
+        # ============================================================
+        # COMBINED BATCH EXCEL
+        # ============================================================
+        st.divider()
         if not inter_summary.empty or not seg_summary.empty:
+            st.subheader("📊 Batch Summary Only (Excel)")
             batch_buffer = io.BytesIO()
             with pd.ExcelWriter(batch_buffer, engine='openpyxl') as writer:
                 if not inter_summary.empty:
@@ -319,13 +461,14 @@ if uploaded_files:
                 if not seg_summary.empty:
                     seg_with_total = append_total_row(seg_summary, 'Source File')
                     seg_with_total.to_excel(writer, sheet_name='Segment Crashes', index=False)
+            
             batch_buffer.seek(0)
             st.download_button(
-                "📊 Download Complete Batch Summary (Excel)",
+                "📊 Download Batch Summary Only (Excel)",
                 batch_buffer.getvalue(),
                 "Batch_Summary.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
 st.markdown("---")
-st.caption("Fixed numpy compatibility error [file:1]")
+st.caption("Traffic safety data extraction tool | Now with batch ZIP download!")
