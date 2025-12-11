@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np  # Added missing import
 import os
 import glob
 import re
@@ -53,7 +54,7 @@ PREDICTED_VARIANTS = {
 }
 
 # ============================================================
-# 2. Helpers (unchanged from original)
+# 2. Helpers (FIXED: numpy.int64 compatibility)
 # ============================================================
 def pick_first_present(variants, columns):
     """Return first variant present in columns, or None."""
@@ -63,11 +64,7 @@ def pick_first_present(variants, columns):
     return None
 
 def find_section1_table(soup):
-    """Return the table whose caption matches TABLE_TITLE_PATTERN.
-    
-    Primary: check each table's caption
-    Fallback: search caption text node anywhere"""
-    # Primary: check each table's caption
+    """Return the table whose caption matches TABLE_TITLE_PATTERN."""
     for table in soup.find_all('table'):
         caption = table.find('caption')
         if not caption:
@@ -76,7 +73,6 @@ def find_section1_table(soup):
         if TABLE_TITLE_PATTERN.search(caption_text):
             return table
     
-    # Fallback: search caption text node anywhere
     node = soup.find(string=TABLE_TITLE_PATTERN)
     if node:
         parent_table = node.find_parent('table')
@@ -98,7 +94,6 @@ def extract_section1_df(html_path):
 def consolidate_tbl(df):
     """Clean and compute difference columns. Expected columns optional."""
     df = df.copy()
-    # Normalize headers
     df.columns = [re.sub(r'\s+', ' ', str(c).strip()) for c in df.columns]
     cols = list(df.columns)
     
@@ -106,7 +101,6 @@ def consolidate_tbl(df):
     if seg_col not in cols:
         raise KeyError(f"Segment column '{seg_col}' not found. Available columns: {', '.join(cols)}")
     
-    # Predicted columns (required)
     pred_fi_col = pick_first_present(PREDICTED_VARIANTS["Predicted FI"], cols)
     pred_pdo_col = pick_first_present(PREDICTED_VARIANTS["Predicted PDO"], cols)
     pred_tot_col = pick_first_present(PREDICTED_VARIANTS["Predicted Total"], cols)
@@ -117,7 +111,6 @@ def consolidate_tbl(df):
     if missing_pred:
         raise KeyError(f"Missing required Predicted columns: {', '.join(missing_pred)}. Available headers: {', '.join(cols)}")
     
-    # Expected columns (optional)
     exp_fi_col = pick_first_present(EXPECTED_VARIANTS["Expected FI"], cols)
     exp_pdo_col = pick_first_present(EXPECTED_VARIANTS["Expected PDO"], cols)
     exp_tot_col = pick_first_present(EXPECTED_VARIANTS["Expected Total"], cols)
@@ -127,11 +120,10 @@ def consolidate_tbl(df):
     if exp_pdo_col: cols_to_keep.append(exp_pdo_col)
     if exp_tot_col: cols_to_keep.append(exp_tot_col)
     
-    # Keep only non-numeric IDs
-    non_numeric_mask = df[seg_col].apply(lambda x: pd.to_numeric(str(x), errors='coerce').notnull())
-    filtered_df = df.loc[~non_numeric_mask, cols_to_keep].copy()
+    # FIXED: Use pd.isna() instead of .notnull() for numpy compatibility
+    non_numeric_mask = df[seg_col].apply(lambda x: pd.to_numeric(str(x), errors='coerce')).isna()
+    filtered_df = df.loc[non_numeric_mask, cols_to_keep].copy()
     
-    # Rename to standard outward names
     rename_map = {
         seg_col: "Segment Number/Intersection Name/Cross Road",
         pred_fi_col: "Predicted FI Crash Frequency (crashes/yr)",
@@ -143,7 +135,6 @@ def consolidate_tbl(df):
     if exp_tot_col: rename_map[exp_tot_col] = "Expected Total Crash Frequency (crashes/yr)"
     filtered_df.rename(columns=rename_map, inplace=True)
     
-    # Difference columns only if Expected available
     if exp_fi_col:
         filtered_df["Expected FI - Predicted FI (crashes/yr)"] = (
             filtered_df["Expected FI Crash Frequency (crashes/yr)"] - 
@@ -160,7 +151,6 @@ def consolidate_tbl(df):
             filtered_df["Predicted Total Crash Frequency (crashes/yr)"]
         )
     
-    # Round numbers
     numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns
     filtered_df[numeric_cols] = filtered_df[numeric_cols].round(4)
     return filtered_df
@@ -187,7 +177,6 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
     corridor_total_label = 'Total Corridor Crashes'
     
     if len(df) > 1 or df[first_col].iloc[0] != corridor_total_label:
-        # Case 1: table has individual segments/intersections (not just total)
         mask_inter = df[first_col].isin([seg_total_label, int_total_label, corridor_total_label])
         inter_rows = df.loc[~mask_inter].copy()
         if not inter_rows.empty:
@@ -200,7 +189,6 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
             seg_rows.insert(0, 'Source File', filename)
             seg_summary = pd.concat([seg_summary, seg_rows], ignore_index=True)
     else:
-        # Case 2: only single 'Total Corridor Crashes' row
         total_row = df.copy()
         total_row.insert(0, 'Source File', filename)
         seg_summary = pd.concat([seg_summary, total_row], ignore_index=True)
@@ -208,7 +196,7 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
     return inter_summary, seg_summary
 
 def append_total_row(df, id_col_name='Source File'):
-    """Append a Total row at the end of df, summing all numeric columns. The ID column is set to 'Total'."""
+    """Append a Total row at the end of df, summing all numeric columns."""
     if df.empty:
         return df
     df = df.copy()
@@ -217,7 +205,7 @@ def append_total_row(df, id_col_name='Source File'):
     for col in df.columns:
         if col == id_col_name:
             continue
-        if df[col].dtype in ['int64', 'int32', 'float64', 'float32']:
+        if df[col].dtype in [np.int64, np.int32, np.float64, np.float32, 'int64', 'int32', 'float64', 'float32']:
             total_row[col] = df[col].sum()
         else:
             total_row[col] = ''
@@ -226,12 +214,11 @@ def append_total_row(df, id_col_name='Source File'):
     return df
 
 # ============================================================
-# 3. Streamlit App Logic
+# 3. Streamlit App Logic (unchanged)
 # ============================================================
 st.title("🚗 Predictive Safety HTML Scraper")
 st.markdown("Upload HTML files containing crash frequency tables and extract Section 1 data.")
 
-# File uploader
 uploaded_files = st.file_uploader(
     "Choose HTML files", 
     type=['html', 'htm'], 
@@ -242,7 +229,6 @@ uploaded_files = st.file_uploader(
 if uploaded_files:
     st.info(f"Found {len(uploaded_files)} file(s) to process.")
     
-    # Process button
     if st.button("🔄 Process Files", type="primary"):
         inter_summary = pd.DataFrame()
         seg_summary = pd.DataFrame()
@@ -255,7 +241,6 @@ if uploaded_files:
             filename = uploaded_file.name
             status_text.text(f"Processing: {filename}...")
             
-            # Save uploaded file temporarily
             temp_path = f"temp_{filename}"
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
@@ -282,13 +267,11 @@ if uploaded_files:
                 st.error(f"❌ Error processing {filename}: {e}")
                 results.append((filename, 0, f"ERROR: {e}"))
             
-            # Clean up temp file
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             
             progress_bar.progress((i + 1) / len(uploaded_files))
         
-        # Display results summary
         st.subheader("📊 Processing Summary")
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -299,13 +282,11 @@ if uploaded_files:
         with col3:
             st.metric("Skipped/Errors", len(uploaded_files) - successes)
         
-        # Display summary tables
         if not inter_summary.empty:
             st.subheader("📈 Intersection Crashes Summary")
             inter_with_total = append_total_row(inter_summary, 'Source File')
             st.dataframe(inter_with_total, use_container_width=True)
             
-            # Download intersection summary
             csv_buffer = io.StringIO()
             inter_with_total.to_csv(csv_buffer, index=False)
             st.download_button(
@@ -320,7 +301,6 @@ if uploaded_files:
             seg_with_total = append_total_row(seg_summary, 'Source File')
             st.dataframe(seg_with_total, use_container_width=True)
             
-            # Download segment summary
             csv_buffer = io.StringIO()
             seg_with_total.to_csv(csv_buffer, index=False)
             st.download_button(
@@ -330,7 +310,6 @@ if uploaded_files:
                 "text/csv"
             )
         
-        # Combined batch summary download
         if not inter_summary.empty or not seg_summary.empty:
             batch_buffer = io.BytesIO()
             with pd.ExcelWriter(batch_buffer, engine='openpyxl') as writer:
@@ -349,4 +328,4 @@ if uploaded_files:
             )
 
 st.markdown("---")
-st.caption("Made for traffic engineering crash frequency analysis from HTML reports [file:1]")
+st.caption("Fixed numpy compatibility error [file:1]")
