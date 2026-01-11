@@ -58,7 +58,7 @@ PREDICTED_VARIANTS = {
 }
 
 # ============================================================
-# 2. Helpers (unchanged)
+# 2. All helper functions (unchanged)
 # ============================================================
 def pick_first_present(variants, columns):
     for v in variants:
@@ -178,7 +178,7 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
         if not inter_rows.empty:
             inter_rows.insert(0, 'Source File', filename)
             inter_summary = pd.concat([inter_summary, inter_rows], ignore_index=True)
-          
+         
         mask_seg = df[first_col] == seg_total_label
         seg_rows = df.loc[mask_seg].copy()
         if not seg_rows.empty:
@@ -213,11 +213,11 @@ def create_individual_excel(raw_df, consolidated_df, filename):
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
         raw_df.to_excel(writer, sheet_name='Original', index=False)
         consolidated_df.to_excel(writer, sheet_name='Consolidated', index=False)
-          
+         
         workbook = writer.book
         header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
         header_font = Font(bold=True, color="FFFFFF")
-          
+         
         for sheet in workbook.sheetnames:
             worksheet = workbook[sheet]
             for cell in worksheet[1]:
@@ -250,7 +250,7 @@ def create_batch_zip(results_data, inter_summary, seg_summary):
             clean_filename = filename.replace('.html', '').replace('.htm', '')
             zf.writestr(f"Individual Files/{clean_filename}_extracted.xlsx", excel_buffer.getvalue())
         
-        # 2. Create ONLY ONE summary file (moved OUTSIDE the loop)
+        # 2. Create ONLY ONE summary file
         summary_buffer = io.BytesIO()
         sheets_written = False
         with pd.ExcelWriter(summary_buffer, engine='openpyxl') as writer:
@@ -262,35 +262,33 @@ def create_batch_zip(results_data, inter_summary, seg_summary):
                 seg_with_total = append_total_row(seg_summary, 'Source File')
                 seg_with_total.to_excel(writer, sheet_name='Segment Crashes', index=False)
                 sheets_written = True
-              
-            # Add message if no data
+             
             if not sheets_written:
                 pd.DataFrame({'Message': ['No intersection/segment data found.']}).to_excel(writer, sheet_name='Summary', index=False)
 
         summary_buffer.seek(0)
-        zf.writestr("Batch_Summary.xlsx", summary_buffer.getvalue())  # ONLY ONCE!
+        zf.writestr("Batch_Summary.xlsx", summary_buffer.getvalue())
    
     zip_buffer.seek(0)
     return zip_buffer
 
-
-# Replace the entire Streamlit App section (from st.set_page_config to end) with this:
-
 # ============================================================
-# 3. Streamlit App - FIXED FILE SELECTION
+# 3. Streamlit App - FINAL VERSION
 # ============================================================
 st.set_page_config(page_title="Predictive Safety Scraper", layout="wide")
 
 st.title("🚗 Predictive Safety HTML Scraper")
 st.markdown("Upload HTML files containing crash frequency tables and extract Section 1 data.")
 
-# Initialize session state with unique keys
+# Initialize session state
 if 'step' not in st.session_state:
-    st.session_state.step = 0  # 0=upload, 1=select, 2=processed
+    st.session_state.step = 0  # 0=upload, 1=select, 3=results
 if 'uploaded_files' not in st.session_state:
     st.session_state.uploaded_files = []
 if 'file_names' not in st.session_state:
     st.session_state.file_names = []
+if 'selected_files' not in st.session_state:
+    st.session_state.selected_files = []
 if 'results_data' not in st.session_state:
     st.session_state.results_data = {}
 if 'inter_summary' not in st.session_state:
@@ -307,62 +305,65 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-# Handle new uploads - reset to selection step
+# Handle new uploads
 if uploaded_files and len(uploaded_files) != len(st.session_state.uploaded_files):
     st.session_state.uploaded_files = uploaded_files
     st.session_state.file_names = [f.name for f in uploaded_files]
-    st.session_state.step = 1  # Go to file selection
+    st.session_state.selected_files = []
+    st.session_state.step = 1
     st.session_state.results_data = {}
     st.session_state.inter_summary = pd.DataFrame()
     st.session_state.seg_summary = pd.DataFrame()
     st.session_state.processing_results = []
     st.rerun()
 
-# STEP 1: Show file selection if files uploaded
+# STEP 1: File Selection (Process starts immediately)
 if st.session_state.step == 1 and st.session_state.file_names:
     st.subheader("📋 Select Files to Process")
+    st.markdown("**Check files to process (all selected by default):**")
     
-    # Default to all files selected
-    default_selection = st.session_state.file_names.copy()
-    selected_files = st.multiselect(
-        "Choose files (all selected by default):",
-        options=st.session_state.file_names,
-        default=default_selection,
-        key="file_selector_unique"
-    )
+    selected_files = []
     
+    for i, filename in enumerate(st.session_state.file_names):
+        is_selected = st.checkbox(
+            f"📄 {filename}",
+            key=f"file_{i}",
+            value=True
+        )
+        if is_selected:
+            selected_files.append(filename)
+    
+    st.session_state.selected_files = selected_files
+    
+    # Live count + selected files list
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("✅ Process Selected Files", type="primary", use_container_width=True):
-            st.session_state.selected_files = selected_files
-            st.session_state.step = 2  # Go to processing
-            st.rerun()
-    
+        st.info(f"**Selected: {len(selected_files)} / {len(st.session_state.file_names)}**")
     with col2:
-        if st.button("🔄 Upload New Files", type="secondary", use_container_width=True):
-            st.session_state.step = 0
-            st.session_state.uploaded_files = []
-            st.session_state.file_names = []
-            st.session_state.selected_files = []
-            st.rerun()
+        st.caption(f"*{len(st.session_state.file_names)} total files uploaded")
     
-    st.info(f"**Selected: {len(selected_files)} / {len(st.session_state.file_names)} files**")
+    if selected_files:
+        with st.expander(f"📋 Selected Files ({len(selected_files)})", expanded=True):
+            for filename in selected_files:
+                st.markdown(f"✅ {filename}")
+    else:
+        st.warning("⚠️ No files selected")
+    
+    # DIRECT PROCESSING
+    if st.button("🚀 Process Selected Files", type="primary", use_container_width=True):
+        if selected_files:
+            st.session_state.step = 3
+            st.rerun()
 
-# STEP 2: Process button and execution
-elif st.session_state.step == 1 and st.button("✅ Process All Files", type="primary"):
-    st.session_state.selected_files = st.session_state.file_names
-    st.session_state.step = 2
-    st.rerun()
-
-# STEP 3: Processing execution
-elif st.session_state.step == 2 and st.session_state.selected_files:
-    if st.button("🔄 Run Processing Now", type="primary", key="run_processing"):
-        with st.spinner(f"Processing {len(st.session_state.selected_files)} selected files..."):
+# STEP 3: Processing + Results (COMBINED)
+elif st.session_state.step == 3:
+    # Process if not done yet
+    if not st.session_state.processing_results:
+        with st.spinner(f"🔄 Processing {len(st.session_state.selected_files)} files..."):
             inter_summary = pd.DataFrame()
             seg_summary = pd.DataFrame()
             results = []
             
-            # Filter to selected files only
             selected_uploaded_files = [
                 f for f in st.session_state.uploaded_files 
                 if f.name in st.session_state.selected_files
@@ -402,7 +403,6 @@ elif st.session_state.step == 2 and st.session_state.selected_files:
                 except Exception as e:
                     results.append((filename, 0, f"❌ ERROR: {str(e)[:40]}"))
                 
-                # Cleanup
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
                 
@@ -411,15 +411,12 @@ elif st.session_state.step == 2 and st.session_state.selected_files:
             st.session_state.inter_summary = inter_summary
             st.session_state.seg_summary = seg_summary
             st.session_state.processing_results = results
-            st.session_state.step = 3  # Processing complete
             status_text.success("✅ Processing complete!")
             st.rerun()
-
-# STEP 4: Show results
-if st.session_state.step == 3:
+    
+    # Show results
     st.success("🎉 Processing Complete!")
     
-    # Processing Summary
     st.subheader("📊 Processing Results")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -430,22 +427,19 @@ if st.session_state.step == 3:
     with col3:
         st.metric("⚠️ Issues", len(st.session_state.processing_results) - successes)
     
-    # Results table
     results_df = pd.DataFrame(
         st.session_state.processing_results,
         columns=['File', 'Rows', 'Status']
     )
     st.dataframe(results_df, use_container_width=True)
     
-    # Reset button
     if st.button("🔄 Start Over", type="secondary"):
-        for key in st.session_state.keys():
+        for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
     
     st.divider()
     
-    # BATCH DOWNLOAD (PROMINENT)
     st.subheader("💾 Download Results")
     batch_zip = create_batch_zip(st.session_state.results_data, st.session_state.inter_summary, st.session_state.seg_summary)
     st.download_button(
@@ -456,7 +450,6 @@ if st.session_state.step == 3:
         use_container_width=True
     )
     
-    # Summary Tables
     if not st.session_state.inter_summary.empty or not st.session_state.seg_summary.empty:
         st.subheader("📈 Summary Tables")
         col_inter, col_seg = st.columns(2)
@@ -476,7 +469,7 @@ if st.session_state.step == 0:
     st.info("""
     **How to use:**
     1. 📤 Upload HTML files
-    2. ✅ Select files to process (all selected by default)
-    3. 🔄 Click "Process Selected Files" 
+    2. ✅ Check files to process (all selected by default)
+    3. 🚀 Click "Process Selected Files" 
     4. 💾 Download results
     """)
