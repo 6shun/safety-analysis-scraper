@@ -1,5 +1,3 @@
-#streamlit run app.py --server.port 8502
-
 import streamlit as st
 import numpy as np
 import os
@@ -11,6 +9,7 @@ import io
 import zipfile
 from openpyxl.styles import Font, PatternFill, Alignment
 
+
 # ============================================================
 # 1. Caption pattern: Table X. Predicted/Expected Crash ... (Section 1)
 # ============================================================
@@ -19,6 +18,7 @@ TABLE_TITLE_PATTERN = re.compile(
     r"(Predicted|Expected)\s+Crash Frequencies and Rates "
     r"by Highway Segment/Intersection \(Section 1\)", re.I
 )
+
 
 # Column name variants (for robustness across files)
 EXPECTED_VARIANTS = {
@@ -39,6 +39,7 @@ EXPECTED_VARIANTS = {
     ],
 }
 
+
 PREDICTED_VARIANTS = {
     "Predicted FI": [
         "Predicted FI Crash Frequency (crashes/yr)",
@@ -57,6 +58,7 @@ PREDICTED_VARIANTS = {
     ],
 }
 
+
 # ============================================================
 # 2. All helper functions (unchanged)
 # ============================================================
@@ -65,6 +67,7 @@ def pick_first_present(variants, columns):
         if v in columns:
             return v
     return None
+
 
 def find_section1_table(soup):
     for table in soup.find_all('table'):
@@ -81,6 +84,7 @@ def find_section1_table(soup):
             return parent_table
     return None
 
+
 def extract_section1_df(html_path):
     with open(html_path, 'r', encoding='utf-8', errors='ignore') as f:
         html = f.read()
@@ -90,6 +94,7 @@ def extract_section1_df(html_path):
         raise RuntimeError("Could not find table with caption 'Table X. Predicted/Expected Crash Frequencies and Rates by Highway Segment/Intersection (Section 1)'.")
     df = pd.read_html(str(table))[0]
     return df
+
 
 def consolidate_tbl(df):
     df = df.copy()
@@ -153,6 +158,7 @@ def consolidate_tbl(df):
     filtered_df[numeric_cols] = filtered_df[numeric_cols].round(4)
     return filtered_df
 
+
 def rename_special_rows(df):
     df = df.copy()
     first_col = df.columns[0]
@@ -164,6 +170,7 @@ def rename_special_rows(df):
     mask = df[first_col].isin(row_mapping.keys())
     df.loc[mask, first_col] = df.loc[mask, first_col].map(row_mapping)
     return df
+
 
 def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary):
     df = consolidated_df.copy()
@@ -191,6 +198,7 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
    
     return inter_summary, seg_summary
 
+
 def append_total_row(df, id_col_name='Source File'):
     if df.empty:
         return df
@@ -208,6 +216,7 @@ def append_total_row(df, id_col_name='Source File'):
     df = pd.concat([df, total_df], ignore_index=True)
     return df
 
+
 def create_individual_excel(raw_df, consolidated_df, filename):
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
@@ -224,7 +233,7 @@ def create_individual_excel(raw_df, consolidated_df, filename):
                 cell.fill = header_fill
                 cell.font = header_font
                 cell.alignment = Alignment(horizontal="center", vertical="center")
-            
+           
             for column in worksheet.columns:
                 max_length = 0
                 column_letter = column[0].column_letter
@@ -240,6 +249,7 @@ def create_individual_excel(raw_df, consolidated_df, filename):
     buffer.seek(0)
     return buffer
 
+
 def create_batch_zip(results_data, inter_summary, seg_summary):
     zip_buffer = io.BytesIO()
    
@@ -249,7 +259,7 @@ def create_batch_zip(results_data, inter_summary, seg_summary):
             excel_buffer = create_individual_excel(data['raw'], data['consolidated'], filename)
             clean_filename = filename.replace('.html', '').replace('.htm', '')
             zf.writestr(f"Individual Files/{clean_filename}_extracted.xlsx", excel_buffer.getvalue())
-        
+       
         # 2. Create ONLY ONE summary file
         summary_buffer = io.BytesIO()
         sheets_written = False
@@ -266,19 +276,23 @@ def create_batch_zip(results_data, inter_summary, seg_summary):
             if not sheets_written:
                 pd.DataFrame({'Message': ['No intersection/segment data found.']}).to_excel(writer, sheet_name='Summary', index=False)
 
+
         summary_buffer.seek(0)
         zf.writestr("Batch_Summary.xlsx", summary_buffer.getvalue())
    
     zip_buffer.seek(0)
     return zip_buffer
 
+
 # ============================================================
 # 3. Streamlit App - FINAL VERSION
 # ============================================================
 st.set_page_config(page_title="Predictive Safety Scraper", layout="wide")
 
+
 st.title("🚗 Predictive Safety HTML Scraper")
 st.markdown("Upload HTML files containing crash frequency tables and extract Section 1 data.")
+
 
 # Initialize session state
 if 'step' not in st.session_state:
@@ -298,12 +312,14 @@ if 'seg_summary' not in st.session_state:
 if 'processing_results' not in st.session_state:
     st.session_state.processing_results = []
 
+
 # File uploader
 uploaded_files = st.file_uploader(
     "Choose HTML files",
     type=['html', 'htm'],
     accept_multiple_files=True
 )
+
 
 # Handle new uploads
 if uploaded_files and len(uploaded_files) != len(st.session_state.uploaded_files):
@@ -317,43 +333,67 @@ if uploaded_files and len(uploaded_files) != len(st.session_state.uploaded_files
     st.session_state.processing_results = []
     st.rerun()
 
+
 # STEP 1: File Selection (Process starts immediately)
 if st.session_state.step == 1 and st.session_state.file_names:
     st.subheader("📋 Select Files to Process")
     st.markdown("**Check files to process (all selected by default):**")
-    
+   
+    # Create columns for buttons
+    col_btn1, col_btn2, col_space = st.columns([1, 1, 3])
+   
+    with col_btn1:
+        if st.button("✅ **Select All**", type="primary", use_container_width=True):
+            st.session_state.selected_files = st.session_state.file_names.copy()
+            st.rerun()
+   
+    with col_btn2:
+        if st.button("❌ **Deselect All**", type="secondary", use_container_width=True):
+            st.session_state.selected_files = []
+            st.rerun()
+   
+    # Individual file checkboxes
     selected_files = []
-    
+   
     for i, filename in enumerate(st.session_state.file_names):
+        # Get current selection state from session state for consistency
+        current_key = f"file_{i}"
+        if current_key not in st.session_state:
+            # Initialize based on whether it's in selected_files
+            st.session_state[current_key] = filename in st.session_state.selected_files
+       
         is_selected = st.checkbox(
             f"📄 {filename}",
-            key=f"file_{i}",
-            value=True
+            key=current_key,
+            value=st.session_state[current_key]
         )
         if is_selected:
             selected_files.append(filename)
-    
+   
+    # Update session state with current selections
     st.session_state.selected_files = selected_files
-    
+   
     # Live count + selected files list
     col1, col2 = st.columns(2)
     with col1:
         st.info(f"**Selected: {len(selected_files)} / {len(st.session_state.file_names)}**")
     with col2:
         st.caption(f"*{len(st.session_state.file_names)} total files uploaded")
-    
+   
     if selected_files:
         with st.expander(f"📋 Selected Files ({len(selected_files)})", expanded=True):
             for filename in selected_files:
                 st.markdown(f"✅ {filename}")
     else:
         st.warning("⚠️ No files selected")
-    
+   
     # DIRECT PROCESSING
     if st.button("🚀 Process Selected Files", type="primary", use_container_width=True):
         if selected_files:
             st.session_state.step = 3
             st.rerun()
+
+
 
 # STEP 3: Processing + Results (COMBINED)
 elif st.session_state.step == 3:
@@ -363,38 +403,38 @@ elif st.session_state.step == 3:
             inter_summary = pd.DataFrame()
             seg_summary = pd.DataFrame()
             results = []
-            
+           
             selected_uploaded_files = [
-                f for f in st.session_state.uploaded_files 
+                f for f in st.session_state.uploaded_files
                 if f.name in st.session_state.selected_files
             ]
-            
+           
             progress_bar = st.progress(0)
             status_text = st.empty()
-            
+           
             for i, uploaded_file in enumerate(selected_uploaded_files):
                 filename = uploaded_file.name
                 status_text.text(f"🔄 Processing: {filename} ({i+1}/{len(selected_uploaded_files)})")
-                
+               
                 temp_path = f"temp_{i}_{filename.replace('/', '_')}"
                 with open(temp_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
-                
+               
                 try:
                     raw_df = extract_section1_df(temp_path)
                     consolidated = consolidate_tbl(raw_df.copy())
                     consolidated = rename_special_rows(consolidated)
-                    
+                   
                     st.session_state.results_data[filename] = {
                         'raw': raw_df,
                         'consolidated': consolidated
                     }
-                    
+                   
                     inter_summary, seg_summary = update_summary_tables(
                         filename, consolidated, inter_summary, seg_summary
                     )
                     results.append((filename, consolidated.shape[0], "✅ SUCCESS"))
-                    
+                   
                 except RuntimeError as e:
                     if "Could not find table with caption" in str(e):
                         results.append((filename, 0, "⚠️ NO Predicted Crash Frequencies and Rates TABLE"))
@@ -402,21 +442,21 @@ elif st.session_state.step == 3:
                         results.append((filename, 0, f"❌ {str(e)[:40]}"))
                 except Exception as e:
                     results.append((filename, 0, f"❌ ERROR: {str(e)[:40]}"))
-                
+               
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
-                
+               
                 progress_bar.progress((i + 1) / len(selected_uploaded_files))
-            
+           
             st.session_state.inter_summary = inter_summary
             st.session_state.seg_summary = seg_summary
             st.session_state.processing_results = results
             status_text.success("✅ Processing complete!")
             st.rerun()
-    
+   
     # Show results
     st.success("🎉 Processing Complete!")
-    
+   
     st.subheader("📊 Processing Results")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -426,20 +466,20 @@ elif st.session_state.step == 3:
         st.metric("📁 Processed", len(st.session_state.processing_results))
     with col3:
         st.metric("⚠️ Issues", len(st.session_state.processing_results) - successes)
-    
+   
     results_df = pd.DataFrame(
         st.session_state.processing_results,
         columns=['File', 'Rows', 'Status']
     )
     st.dataframe(results_df, use_container_width=True)
-    
+   
     if st.button("🔄 Start Over", type="secondary"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
-    
+   
     st.divider()
-    
+   
     st.subheader("💾 Download Results")
     batch_zip = create_batch_zip(st.session_state.results_data, st.session_state.inter_summary, st.session_state.seg_summary)
     st.download_button(
@@ -449,20 +489,21 @@ elif st.session_state.step == 3:
         mime="application/zip",
         use_container_width=True
     )
-    
+   
     if not st.session_state.inter_summary.empty or not st.session_state.seg_summary.empty:
         st.subheader("📈 Summary Tables")
         col_inter, col_seg = st.columns(2)
-        
+       
         with col_inter:
             if not st.session_state.inter_summary.empty:
                 st.write("**Intersection Crashes**")
                 st.dataframe(append_total_row(st.session_state.inter_summary, 'Source File'), use_container_width=True)
-        
+       
         with col_seg:
             if not st.session_state.seg_summary.empty:
                 st.write("**Segment Crashes**")
                 st.dataframe(append_total_row(st.session_state.seg_summary, 'Source File'), use_container_width=True)
+
 
 # Instructions
 if st.session_state.step == 0:
@@ -470,6 +511,6 @@ if st.session_state.step == 0:
     **How to use:**
     1. 📤 Upload HTML files
     2. ✅ Check files to process (all selected by default)
-    3. 🚀 Click "Process Selected Files" 
+    3. 🚀 Click "Process Selected Files"
     4. 💾 Download results
     """)
