@@ -178,7 +178,7 @@ def rename_special_rows(df):
     row_mapping = {
         'All Segments': 'Total Segment Crashes',
         'All Intersections': 'Total Intersection Crashes',
-        'Total': 'Total',
+        'Total': 'Total Corridor Crashes',
     }
     mask = df[first_col].isin(row_mapping.keys())
     df.loc[mask, first_col] = df.loc[mask, first_col].map(row_mapping)
@@ -190,7 +190,7 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
     first_col = df.columns[0]
     seg_total_label = 'Total Segment Crashes'
     int_total_label = 'Total Intersection Crashes'
-    corridor_total_label = 'Total'
+    corridor_total_label = 'Total Corridor Crashes'
    
     if len(df) > 1 or df[first_col].iloc[0] != corridor_total_label:
         mask_inter = df[first_col].isin([seg_total_label, int_total_label, corridor_total_label])
