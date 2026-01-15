@@ -13,11 +13,24 @@ from openpyxl.styles import Font, PatternFill, Alignment
 # ============================================================
 # 1. Caption pattern: Table X. Predicted/Expected Crash ... (Section 1)
 # ============================================================
+# TABLE_TITLE_PATTERN = re.compile(
+#     r"Table\s+\d{1,2}\.\s*"
+#     r"(Predicted|Expected)\s+Crash Frequencies and Rates "
+#     r"by Highway Segment/Intersection \(Section 1\)", re.I
+# )
+
 TABLE_TITLE_PATTERN = re.compile(
     r"Table\s+\d{1,2}\.\s*"
-    r"(Predicted|Expected)\s+Crash Frequencies and Rates "
-    r"by Highway Segment/Intersection \(Section 1\)", re.I
+    r"(?:Predicted|Expected)\s+Crash Frequencies and Rates "
+    r"by (?:"
+        r"Highway Segment/Intersection \(Section 1\)"
+        r"|Roundabout\s*\([^)]*\)"
+        r"|Ramp Segment/Intersection\s*\([^)]*\)"
+        r"|Ramp Terminal\s*\([^)]*\)"
+    r")",
+    re.I
 )
+
 
 
 # Column name variants (for robustness across files)
@@ -165,7 +178,7 @@ def rename_special_rows(df):
     row_mapping = {
         'All Segments': 'Total Segment Crashes',
         'All Intersections': 'Total Intersection Crashes',
-        'Total': 'Total Corridor Crashes',
+        'Total': 'Total',
     }
     mask = df[first_col].isin(row_mapping.keys())
     df.loc[mask, first_col] = df.loc[mask, first_col].map(row_mapping)
@@ -177,7 +190,7 @@ def update_summary_tables(filename, consolidated_df, inter_summary, seg_summary)
     first_col = df.columns[0]
     seg_total_label = 'Total Segment Crashes'
     int_total_label = 'Total Intersection Crashes'
-    corridor_total_label = 'Total Corridor Crashes'
+    corridor_total_label = 'Total'
    
     if len(df) > 1 or df[first_col].iloc[0] != corridor_total_label:
         mask_inter = df[first_col].isin([seg_total_label, int_total_label, corridor_total_label])
