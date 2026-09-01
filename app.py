@@ -98,14 +98,26 @@ def find_section1_table(soup):
     return None
 
 
-def extract_section1_df(html_path):
-    with open(html_path, 'r', encoding='utf-8', errors='ignore') as f:
-        html = f.read()
+def extract_section1_df(html_source):
+    if hasattr(html_source, 'read'):
+        content = html_source.read()
+        if isinstance(content, bytes):
+            html = content.decode('utf-8', errors='ignore')
+        else:
+            html = content
+    elif isinstance(html_source, bytes):
+        html = html_source.decode('utf-8', errors='ignore')
+    elif isinstance(html_source, (str, os.PathLike)) and os.path.exists(html_source):
+        with open(html_source, 'r', encoding='utf-8', errors='ignore') as f:
+            html = f.read()
+    else:
+        html = str(html_source)
+
     soup = BeautifulSoup(html, 'html.parser')
     table = find_section1_table(soup)
     if table is None:
         raise RuntimeError("Could not find table with caption 'Table X. Predicted/Expected Crash Frequencies and Rates by Highway Segment/Intersection (Section 1)'.")
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     return df
 
 
@@ -429,12 +441,8 @@ elif st.session_state.step == 3:
                 filename = uploaded_file.name
                 status_text.text(f"🔄 Processing: {filename} ({i+1}/{len(selected_uploaded_files)})")
                
-                temp_path = f"temp_{i}_{filename.replace('/', '_')}"
-                with open(temp_path, "wb") as f:
-                    f.write(uploaded_file.getbuffer())
-               
                 try:
-                    raw_df = extract_section1_df(temp_path)
+                    raw_df = extract_section1_df(uploaded_file.getvalue())
                     consolidated = consolidate_tbl(raw_df.copy())
                     consolidated = rename_special_rows(consolidated)
                    
@@ -455,9 +463,6 @@ elif st.session_state.step == 3:
                         results.append((filename, 0, f"❌ {str(e)[:40]}"))
                 except Exception as e:
                     results.append((filename, 0, f"❌ ERROR: {str(e)[:40]}"))
-               
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
                
                 progress_bar.progress((i + 1) / len(selected_uploaded_files))
            
