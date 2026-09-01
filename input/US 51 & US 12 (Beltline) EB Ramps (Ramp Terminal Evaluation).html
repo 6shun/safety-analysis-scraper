@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0105)file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<meta name="Generator" content="common.docobj.GenerateHTML v1.112 (Sat May 18 10:59:44 MDT 2019)">
+<meta name="Created" content="Fri Jan 09 12:19:49 CST 2026">
+<style type="text/css">
+BODY {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+TABLE {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+FORM {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+</style>
+<title>Crash Prediction Evaluation Report</title>
+<link rel="shortcut icon" href="file:///C:/favicon.ico" type="image/x-icon">
+<link rel="section" title="Report Overview" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1">
+<link rel="section" title="Section Types" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2">
+<link rel="top" title="top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">
+<link rel="subsection" title="Disclaimer Regarding Crash Prediction Method" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1_1">
+<link rel="top" title="top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">
+<link rel="subsection" title="US 51 &amp; US 12 (Beltline) EB Ramps Evaluation" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2_1">
+</head>
+<body><a name="_top"></a>
+<table width="100%" border="0" cellspacing="0" cellpadding="4"> <!--  region -->
+<tbody><tr><td width="60%" valign="top"><p><font size="+2"><b>Interactive Highway Safety Design Model</b></font></p>
+<p><font size="+2"><b><i>Crash Prediction Evaluation Report</i></b></font></p>
+<p><br>Version v16.0.0 (Sep 30, 2020)</p>
+<p>January 9, 2026</p>
+<br><br><hr><br><font size="+1="><b></b></font>
+<a name="_p2"></a>
+<p><font size="+0"><b></b></font></p><div style="text-align: center"><font size="+0"><b>Disclaimer</b></font></div><p></p>
+<a name="_p3"></a>
+<p><font size="-1">The Interactive Highway Design Model (IHSDM) software is disseminated under the sponsorship of the Department of Transportation in the interest of information exchange. The United States Government assumes no liability for its content or use thereof. This document does not constitute a standard, specification, or regulation.</font></p>
+<a name="_p4"></a>
+<p><font size="-1">The United States Government does not endorse products or manufacturers. Trade and manufacturers' names may appear in this software and documentation only because they are considered essential to the objective of the software.</font></p>
+<a name="_p5"></a>
+<p><font size="+0"><b></b></font></p><div style="text-align: center"><font size="+0"><b>Limited Warranty and Limitations of Remedies</b></font></div><p></p>
+<a name="_p6"></a>
+<p><font size="-1">This software product is provided "as-is," without warranty of any kind-either expressed or implied (but not limited to the implied warranties of merchantability and fitness for a particular purpose). The FHWA do not warrant that the functions contained in the software will meet the end-user's requirements or that the operation of the software will be uninterrupted and error-free.</font></p>
+<a name="_p7"></a>
+<p><font size="-1">Under no circumstances will the FHWA be liable to the end-user for any damages or claimed lost profits, lost savings, or other incidental or consequential damages rising out of the use or inability to use the software (even if these organizations have been advised of the possibility of such damages), or for any claim by any other party.</font></p>
+<a name="_p8"></a>
+<p><font size="+0"><b></b></font></p><div style="text-align: center"><font size="+0"><b>Notice</b></font></div><p></p>
+<a name="_p9"></a>
+<p><font size="-1">The use of the IHSDM software is being done strictly on a voluntary basis. In exchange for provision of IHSDM, the user agrees that the Federal Highway Administration (FHWA), U.S. Department of Transportation and any other agency of the Federal Government shall not be responsible for any errors, damage or other liability that may result from any and all use of the software, including installation and testing of the software. The user further agrees to hold the FHWA and the Federal Government harmless from any resulting liability. The user agrees that this hold harmless provision shall flow to any person to whom or any entity to which the user provides the IHSDM software. It is the user's full responsibility to inform any person to whom or any entity to which it provides the IHSDM software of this hold harmless provision.</font></p>
+</td><td width="40%" valign="top"><h3>Table of Contents</h3>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Overview of the evaluation associated with this report" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1">Report Overview</a></div>
+<div style="margin-left: 1.5em; text-indent: -1em"><a title="link to Disclaimer associated with the CPM evaluation" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1_1">Disclaimer Regarding Crash Prediction Method</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2">Section Types</a></div>
+<div style="margin-left: 1.5em; text-indent: -1em"><a title="link to evaluation results for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2_1">US 51 &amp; US 12 (Beltline) EB Ramps Evaluation</a></div>
+<h3>List of Tables</h3>
+<br><br><div style="margin-left: 1.0em; text-indent: -1em"><a title="link to List of evaluation ramp terminal sites for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl1">Evaluation Ramp Terminal - Site (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl2">Predicted Ramp Terminal Crash Rates and Frequencies Summary (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Summary of crash rates and frequencies for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl3">Predicted Crash Frequencies and Rates by Ramp Terminal (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl4">Predicted Crash Frequencies by Year (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Summary of crash severity for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl5">Predicted Crash Severity by Ramp Terminal (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a title="link to Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl6">Predicted Ramp Terminal Crash Type Distribution (US 51 &amp; US 12 (Beltline) EB Ramps)</a></div>
+<div style="margin-left: 1.0em; text-indent: -1em"><a href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_tbl7">Evaluation Message</a></div>
+</td></tr></tbody></table>
+
+
+
+
+
+
+<meta name="Generator" content="common.docobj.GenerateHTML v1.112 (Sat May 18 10:59:44 MDT 2019)">
+<meta name="Created" content="Fri Jan 09 12:19:49 CST 2026">
+<style type="text/css">
+BODY {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+TABLE {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+FORM {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; line-height: normal; font-weight: normal}
+</style>
+<title>Crash Prediction Evaluation Report</title>
+<link rel="shortcut icon" href="file:///C:/favicon.ico" type="image/x-icon">
+<link rel="section" title="Report Overview" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1">
+<link rel="section" title="Section Types" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2">
+<link rel="top" title="top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">
+<link rel="subsection" title="Disclaimer Regarding Crash Prediction Method" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec1_1">
+<link rel="top" title="top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">
+<link rel="subsection" title="US 51 &amp; US 12 (Beltline) EB Ramps Evaluation" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_sec2_1">
+
+<a name="_top"></a>
+<table width="100%" border="0" cellspacing="0" cellpadding="4"> <!-- top region -->
+<tbody><tr><td width="33%" align="left">&nbsp;</td><td width="33%" align="center"></td><td width="33%" align="right">&nbsp;</td></tr></tbody></table>
+<a name="_sec1"></a>
+<h1 title="Overview of the evaluation associated with this report">Report Overview</h1>
+<a name="_p10"></a>
+<p><font size="-1"><b>Report Generated: </b></font><font size="-1">Jan 9, 2026 12:52 PM<br></font><font size="-1"><b>Report Template: </b></font><font size="-1">System: Single Page, 508 Compliant [System] (mlcpm5, Feb 8, 2024 10:13 AM)<br></font></p>
+<a name="_p11"></a>
+<p><font size="-1"></font><font size="-1"><b>Evaluation Date:</b> Fri Jan 09 12:51:20 CST 2026</font><br><font size="-1"><b>IHSDM Version:</b> v16.0.0 (Sep 30, 2020)</font><br><font size="-1"><b>Crash Prediction Module:</b> v11.0.0 (Sep 30, 2020)</font><br></p>
+<a name="_p12"></a>
+<p><font size="-1"></font><font size="-1"><b>User Name:</b> rikerm</font><br><font size="-1"><b>Organization Name:</b> AECOM</font><br><font size="-1"><b>Phone:</b></font><br><font size="-1"><b>E-Mail:</b> meg.riker@aecom.com</font><br></p>
+<a name="_p13"></a>
+<p><font size="-1"></font><font size="-1"><b>Project Title:</b> US 51 Stoughton Road_No Build_2025-12-18</font><br><font size="-1"><b>Project Comment:</b> Created Tue Feb 13 15:56:55 CST 2024</font><br><font size="-1"><b>Project Unit System:</b> U.S. Customary</font><br></p>
+<a name="_p14"></a>
+<p><font size="-1"></font><font size="-1"><b>Intersection Title:</b> US 51 &amp; US 12 (Beltline) EB Ramps</font><br><font size="-1"><b>Intersection Comment:</b> Created Tue Jul 15 10:27:40 CDT 2025</font><br><font size="-1"><b>Intersection Version:</b> v1</font><br></p>
+<a name="_p15"></a>
+<p><font size="-1"></font><font size="-1"><b>Evaluation Title:</b> US 51 &amp; US 12 (Beltline) Ramps</font><br><font size="-1"><b>Evaluation Comment:</b> Created Fri Jan 09 12:50:32 CST 2026</font><br></p>
+<a name="_p16"></a>
+<p><font size="-1"></font><font size="-1"><b>Minimum Location:</b> 0.000</font><br><font size="-1"><b>Maximum Location:</b> 301+46.518</font><br><font size="-1"><b>Policy for Superelevation:</b> AASHTO 2011 U.S. Customary</font><br><font size="-1"><b>Calibration:</b> WisDOT_Calibration_v16-5</font><br><font size="-1"><b>Crash Distribution:</b> WisDOT_Distributions_v16-5</font><br><font size="-1"><b>Model/CMF:</b> WisDOT_Models_v16-5</font><br><font size="-1"><b>First Year of Analysis:</b> 2041</font><br><font size="-1"><b>Last Year of Analysis:</b> 2050</font><br><font size="-1"><b>Empirical-Bayes Analysis:</b> None</font><br><font size="-1"><b>First Year of Observed Crashes:</b></font><br><font size="-1"><b>Last Year of Observed Crashes:</b></font><br></p>
+<a name="_p17"></a>
+<p><font size="-1"></font></p>
+<a name="_p18"></a>
+<p><font size="-1"></font></p>
+<a name="_sec1_1"></a>
+<h2 title="Disclaimer associated with the CPM evaluation">Disclaimer Regarding Crash Prediction Method</h2>
+<a name="_p19"></a>
+<p><font size="-1"><b><br>IMPORTANT NOTICE ABOUT COMPARING RESULTS FROM HIGHWAY SAFETY MANUAL FIRST EDITION (2010) MODELS TO RESULTS FROM NEW MODELS DEVELOPED UNDER NCHRP PROJECTS 17-70 AND 17-58<br></b></font><font size="-1"><br>Since the publication of the Highway Safety Manual - First Edition (HSM-1), in 2010 by the American Association of State Highway and Transportation Officials (AASHTO), multiple research efforts have been undertaken through the National Cooperative Highway Research Program (NCHRP) to develop safety performance models for road segment and intersection facility types that were not initially reflected in the HSM-1, in order to expand the breadth and depth of the HSM in the future.<br></font><font size="-1"><br>The IHSDM Crash Prediction Module (CPM) is intended as a faithful implementation of HSM Part C predictive methods. As NCHRP projects to develop new predictive methods for the HSM are completed, FHWA works to incorporate the new methods into IHSDM, sometimes in advance of publication in the HSM. The following new crash predictive methods have been accepted by NCHRP project panels and incorporated into IHSDM, while pending AASHTO's approval for incorporation into a future edition of the HSM:<br></font><font size="-1"><br>- Roundabouts: completed in 2018 under NCHRP Project 17-70, the new methods will provide improved outcomes for the safety analysis of roundabouts.<br></font><font size="-1">- 6+ lane and one-way urban/suburban arterials (including models for segments and intersections): completed under NCHRP Project 17-58.<br></font><font size="-1"><font color="FF0000"><br>However, in the absence of local calibration factors (see HSM-1 Part C, Appendix A for guidance on calibration of the predictive models), it is neither appropriate nor advisable to directly compare the results from new models (from NCHRP Projects 17-58 and 17-70) to results from HSM-1 models, as the models were not calibrated to the same base state data sets, and consequently can produce unexpected results. If local calibration factors are available and applied to both new models and HSM-1 models, then it may be appropriate to directly compare the results.</font></font><font size="-1"><i>[Note: Work being performed under NCHRP Project 17-72 (Update of Crash Modification Factors for the Highway Safety Manual) is expected to re-calibrate many of the old (HSM-1) and new (e.g., NCHRP 17-70) models to data from a single (or small number of) states, that would allow results from all models to be directly compared.]<br></i></font><font size="-1"><br>The models produced for NCHRP Project 17-70 have independent value in terms of informing the design of a roundabout and assessing the effects of different design characteristics on the expected safety performance of a roundabout.<br></font><font size="-1"><font color="FF0000"><br>The HSM-1 interim method previously included in IHSDM for evaluating roundabouts on urban/suburban arterials (i.e., evaluating an existing intersection and then applying a Crash Modification Factor for replacing the existing intersection with a roundabout) has been deactivated in IHSDM, to minimize any confusion with the new roundabout methodology.<br></font></font></p>
+<br><table width="100%" border="0" cellspacing="0" cellpadding="4"> <!-- bottom region -->
+<tbody><tr><td width="33%" align="left">&nbsp;</td><td width="33%" align="center"><a title="link to top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">[Top]</a></td><td width="33%" align="right">&nbsp;</td></tr></tbody></table>
+<br><a name="_sec2"></a>
+<h1>Section Types</h1>
+<a name="_sec2_1"></a>
+<h2 title="evaluation results for US 51 &amp; US 12 (Beltline) EB Ramps">US 51 &amp; US 12 (Beltline) EB Ramps Evaluation</h2>
+<a name="_p21"></a>
+<p><font size="-1"><b>Intersection:</b> US 51 &amp; US 12 (Beltline) EB Ramps</font><br><font size="-1"><b>Evaluation Start Location:</b> 0.000</font><br><font size="-1"><b>Evaluation End Location:</b> 301+46.518</font><br><font size="-1"><b>Calibration Factor:</b> RT_SG_FI=1.0; RT_SG_PDO=1.0; </font><br><br></p>
+<a name="_tbl1"></a>
+<table align="center" border="1" cellpadding="2" class="Base" title="List of evaluation ramp terminal sites for US 51 &amp; US 12 (Beltline) EB Ramps" summary="List of evaluation ramp terminal sites for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 1.&nbsp;&nbsp;Evaluation Ramp Terminal - Site (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Sequential intersection number" scope="col"><b>Inter. No.</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Intersection title" scope="col"><b>Title</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Intersection type title" scope="col"><b>Type</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Area type, rural, suburban or urban" scope="col"><b>Area Type</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of intersection legs" scope="col"><b>Legs</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Intersection location on the evaluation highway" scope="col"><b>Location (Sta. ft)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" scope="col"><b>Traffic Control</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Traffic AADT year and volume" scope="col"><b>AADT</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="right" style="color: #000000; background-color: #ffffff" title="Sequential intersection number">1<br></td>
+<td align="center" style="color: #000000; background-color: #ffffff" title="Intersection title">US 51 &amp; US 12 (Beltline) EB Ramps (v1)<br></td>
+<td align="center" style="color: #000000; background-color: #ffffff" title="Intersection type title">Freeway Ramp Terminal D4 - Four-Leg with Diagonal Ramps<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Area type, rural, suburban or urban">Urban<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Number of intersection legs">4<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Intersection location on the evaluation highway">62+05.000<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="null: signalized intersection, e.g. all legs are signal controlled">Signalized<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Traffic AADT year and volume">Inside: 2041: 38,689; 2042: 38,957; 2043: 39,225; 2044: 39,492; 2045: 39,760; 2046: 40,028; 2047: 40,296; 2048: 40,564; 2049: 40,832; 2050: 41,100; Outside: 2041: 38,689; 2042: 38,957; 2043: 39,225; 2044: 39,492; 2045: 39,760; 2046: 40,028; 2047: 40,296; 2048: 40,564; 2049: 40,832; 2050: 41,100 :: Entrance: 2041: 8,489; 2042: 8,557; 2043: 8,625; 2044: 8,692; 2045: 8,760; 2046: 8,828; 2047: 8,896; 2048: 8,964; 2049: 9,032; 2050: 9,100; Exit: 2041: 25,950; 2042: 26,100; 2043: 26,250; 2044: 26,400; 2045: 26,550; 2046: 26,700; 2047: 26,850; 2048: 27,000; 2049: 27,150; 2050: 27,300<br></td>
+</tr>
+</tbody>
+</table><a name="_p22"></a>
+<p><br><br></p>
+<a name="_tbl2"></a>
+<table align="center" border="1" width="40%" cellpadding="6" class="Base" title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps" summary="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 2.&nbsp;&nbsp;Predicted Ramp Terminal Crash Rates and Frequencies Summary (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<tbody>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b0 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="The first year of the crash predictions"><b>First Year of Analysis</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="The first year of the crash predictions"><b>2041</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b1 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="The last year of the crash predictions"><b>Last Year of Analysis</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="The last year of the crash predictions"><b>2050</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b2 (body)  -->
+<td align="center" style="color: #000000; background-color: #dddddd" colspan="2"><b>Predicted Crashes</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b3 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Total crashes during the evaluation period"><b>Total Crashes</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Total crashes during the evaluation period"><b>250.64</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b4 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Fatal and injury crashes during the evaluation period"><b>Fatal and Injury Crashes</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Fatal and injury crashes during the evaluation period"><b>116.41</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b5 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Property-damage-only crashes during the evaluation period"><b>Property-Damage-Only Crashes</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Property-damage-only crashes during the evaluation period"><b>134.24</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b6 (body)  -->
+<td align="center" style="color: #000000; background-color: #dddddd" colspan="2"><b>Percent of Total Predicted Crashes</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b7 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Percent of fatal and injury crashes during the evaluation period"><b>Percent Fatal and Injury Crashes (%)</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Percent of fatal and injury crashes during the evaluation period"><b>46</b><br></td>
+</tr>
+<tr title="Tabular summary of crash rates and frequencies for US 51 &amp; US 12 (Beltline) EB Ramps"><!-- b8 (body)  -->
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Percent of property-damage-only crashes during the evaluation period"><b>Percent Property-Damage-Only Crashes (%)</b><br></td>
+<td align="right" style="color: #000000; background-color: #b5d0f7" title="Percent of property-damage-only crashes during the evaluation period"><b>54</b><br></td>
+</tr>
+</tbody>
+</table><a name="_p23"></a>
+<p><br><br></p>
+<a name="_tbl3"></a>
+<table align="center" border="1" width="98%" cellpadding="4" class="Base" title="Summary of crash rates and frequencies for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps" summary="Summary of crash rates and frequencies for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 3.&nbsp;&nbsp;Predicted Crash Frequencies and Rates by Ramp Terminal (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Name of intersection or names of cross roads" scope="col"><b>Segment Number/Intersection Name/Cross Road</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Segment starting location" scope="col"><b>Location (Sta. ft)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Total crashes during the evaluation period" scope="col"><b>Total Predicted Crashes for Evaluation Period</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Total crashes per year" scope="col"><b>Predicted Total Crash Frequency (crashes/yr)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Fatal and injury crashes per year" scope="col"><b>Predicted FI Crash Frequency (crashes/yr)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Property-damage-only crashes per year" scope="col"><b>Predicted PDO Crash Frequency (crashes/yr)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Crashes per million entering vehicles for the intersection" scope="col"><b>Predicted Travel Crash Rate (crashes/million veh)</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="center" style="color: #000000; background-color: #ffffff" title="Name of intersection or names of cross roads">US 51 &amp; US 12 (Beltline) EB Ramps (v1)<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Segment starting location">62+05.000<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">250.642<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes per year">25.0642<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes per year">11.6407<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes per year">13.4235<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Crashes per million entering vehicles for the intersection">1.19<br></td>
+</tr>
+</tbody>
+</table><a name="_p24"></a>
+<p><br><br></p>
+<a name="_tbl4"></a>
+<table align="center" border="1" width="84%" cellpadding="4" class="Base" title="Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps" summary="Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 4.&nbsp;&nbsp;Predicted Crash Frequencies by Year (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Evaluation year" scope="col"><b>Year</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of total crashes" scope="col"><b>Total Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of fatal and injury (F/A/B/C) crashes" scope="col"><b>FI Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Percentage of fatal and  injury (F/A/B/C) crashes" scope="col"><b>Percent FI (%)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of property damage only crashes" scope="col"><b>PDO Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Percent of property damage only crashes" scope="col"><b>Percent PDO (%)</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2041<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">24.65<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.40<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.238<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.25<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.762<br></td>
+</tr>
+<tr><!-- b1 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2042<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">24.74<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.45<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.290<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.29<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.710<br></td>
+</tr>
+<tr><!-- b2 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2043<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">24.83<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.51<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.340<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.32<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.660<br></td>
+</tr>
+<tr><!-- b3 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2044<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">24.92<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.56<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.386<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.36<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.614<br></td>
+</tr>
+<tr><!-- b4 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2045<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.01<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.61<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.431<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.40<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.569<br></td>
+</tr>
+<tr><!-- b5 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2046<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.11<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.67<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.473<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.44<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.527<br></td>
+</tr>
+<tr><!-- b6 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2047<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.20<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.72<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.512<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.48<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.488<br></td>
+</tr>
+<tr><!-- b7 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2048<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.30<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.78<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.550<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.52<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.450<br></td>
+</tr>
+<tr><!-- b8 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2049<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.39<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.83<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.584<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.56<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.416<br></td>
+</tr>
+<tr><!-- b9 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">2050<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.49<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.88<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.617<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.61<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.383<br></td>
+</tr>
+<tr><!-- b10 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">Total<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">250.64<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">116.41<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.443<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">134.24<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.557<br></td>
+</tr>
+<tr><!-- b11 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Evaluation year">Average<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes during the evaluation period">25.06<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes during the evaluation period">11.64<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes during the evaluation period">46.443<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property-damage-only crashes during the evaluation period">13.42<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property-damage-only crashes during the evaluation period">53.557<br></td>
+</tr>
+</tbody>
+</table><a name="_p25"></a>
+<p><br><font size="-1"><b>Note: </b></font><font size="-1"><i>Fatal and Injury Crashes</i></font><font size="-1"> and </font><font size="-1"><i>Property Damage Only Crashes</i></font><font size="-1"> do not necessarily sum up to </font><font size="-1"><i>Total Crashes</i></font><font size="-1"> because the distribution of these three crashes had been derived independently.<br></font><br></p>
+<a name="_tbl5"></a>
+<table align="center" border="1" width="84%" cellpadding="4" class="Base" title="Summary of crash severity for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps" summary="Summary of crash severity for the evaluation period for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 5.&nbsp;&nbsp;Predicted Crash Severity by Ramp Terminal (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Sequential segment number" scope="col"><b>Seg. No.</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Fatal (K) segment crashes" scope="col"><b>Fatal (K) Crashes (crashes)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Incapacitating injury (A) segment crashes" scope="col"><b>Incapacitating Injury (A) Crashes (crashes)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Non-Incapacitating injury (B) segment crashes" scope="col"><b>Non-Incapacitating Injury (B) Crashes (crashes)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Possible injury (C) segment crashes" scope="col"><b>Possible Injury (C) Crashes (crashes)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="No injury (Property Damage Only) segment crashes" scope="col"><b>No Injury (O) Crashes (crashes)</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="center" style="color: #000000; background-color: #ffffff" title="Sequential segment number">1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal (K) segment crashes">0.1069<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Incapacitating injury (A) segment crashes">2.6685<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Non-Incapacitating injury (B) segment crashes">17.4928<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Possible injury (C) segment crashes">96.1384<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="No injury (Property Damage Only) segment crashes">134.2351<br></td>
+</tr>
+</tbody>
+</table><a name="_p26"></a>
+<p><br><br></p>
+<a name="_tbl6"></a>
+<table align="center" border="1" cellpadding="2" class="Base" title="Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps" summary="Summary of crash type by severity for US 51 &amp; US 12 (Beltline) EB Ramps">
+<caption><span class="TableCaption">Table 6.&nbsp;&nbsp;Predicted Ramp Terminal Crash Type Distribution (US 51 &amp; US 12 (Beltline) EB Ramps)</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Crash element type" scope="col"><b>Element Type</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Crash type" scope="col"><b>Crash Type</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of fatal and injury (F/A/B/C) crashes" scope="col"><b>FI Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Percentage of fatal and  injury (F/A/B/C) crashes" scope="col"><b>Percent FI (%)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of property damage only crashes" scope="col"><b>PDO Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Percent of property damage only crashes" scope="col"><b>Percent PDO (%)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Number of total crashes" scope="col"><b>Total Crashes</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Percent of total crashes" scope="col"><b>Percent Total (%)</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Collision with Animal<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">0.04<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">0.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">0.79<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">0.3<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">0.83<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">0.3<br></td>
+</tr>
+<tr><!-- b1 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Collision with Fixed Object<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">4.47<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">1.8<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">10.95<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">4.4<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">15.42<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">6.2<br></td>
+</tr>
+<tr><!-- b2 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Collision with Other Object<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">0.00<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">0.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">0.00<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">0.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">0.00<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">0.0<br></td>
+</tr>
+<tr><!-- b3 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Other Single-vehicle Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">6.14<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">2.5<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">4.79<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">1.9<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">10.93<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">4.4<br></td>
+</tr>
+<tr><!-- b4 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Collision with Parked Vehicle<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">0.12<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">0.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">0.29<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">0.1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">0.41<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">0.2<br></td>
+</tr>
+<tr><!-- b5 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Total Single Vehicle Crashes<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">10.77<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">4.3<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">16.81<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">6.7<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">27.58<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">11.0<br></td>
+</tr>
+<tr><!-- b6 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Right-Angle Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">47.79<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">19.1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">34.52<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">13.8<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">82.31<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">32.8<br></td>
+</tr>
+<tr><!-- b7 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Head-on Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">5.43<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">2.2<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">2.62<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">1.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">8.04<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">3.2<br></td>
+</tr>
+<tr><!-- b8 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Other Multi-vehicle Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">2.63<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">1.1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">3.29<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">1.3<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">5.92<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">2.4<br></td>
+</tr>
+<tr><!-- b9 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Rear-end Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">46.99<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">18.7<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">64.46<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">25.7<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">111.45<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">44.5<br></td>
+</tr>
+<tr><!-- b10 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Sideswipe, Same Direction Collision<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">2.79<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">1.1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">12.54<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">5.0<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">15.34<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">6.1<br></td>
+</tr>
+<tr><!-- b11 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Total Multiple Vehicle Crashes<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">105.64<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">42.1<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">117.42<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">46.8<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">223.06<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">89.0<br></td>
+</tr>
+<tr><!-- b12 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type">Ramp Terminal<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Total Ramp Terminal Crashes<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">116.41<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">46.4<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">134.24<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">53.6<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">250.64<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">100.0<br></td>
+</tr>
+<tr><!-- b13 (body)  -->
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash element type"> <br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Crash type">Total Crashes<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Fatal and injury crashes of specified crash type">116.41<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of fatal and injury crashes of specified crash type to total crashes">46.4<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Property damage only crashes of specified crash type">134.24<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of property damage only crashes of specified crash type to total crashes">53.6<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Total crashes of specified crash type">250.64<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Percent of total crashes of specified crash type to total crashes">100.0<br></td>
+</tr>
+</tbody>
+</table><a name="_p27"></a>
+<p><br><font size="-1"><b>Note: </b></font><font size="-1"><i>Fatal and Injury Crashes</i></font><font size="-1"> and </font><font size="-1"><i>Property Damage Only Crashes</i></font><font size="-1"> do not necessarily sum up to </font><font size="-1"><i>Total Crashes</i></font><font size="-1"> because the distribution of these three crashes had been derived independently.<br></font><br></p>
+<a name="_tbl7"></a>
+<table align="center" border="1" width="42%" cellpadding="6" class="Base">
+<caption><span class="TableCaption">Table 7.&nbsp;&nbsp;Evaluation Message</span></caption>
+<thead>
+<tr><!-- h0 (header)  -->
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Segment starting location" scope="col"><b>Start Location (Sta. ft)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Segment ending location" scope="col"><b>End Location (Sta. ft)</b><br></th>
+<th align="center" style="color: #000000; background-color: #b5d0f7" title="Message body" scope="col"><b>Message</b><br></th>
+</tr>
+</thead>
+<tbody>
+<tr><!-- b0 (body)  -->
+<td align="right" style="color: #000000; background-color: #ffffff" title="Segment starting location">62+05.000<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Segment ending location">62+05.000<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Message body">for intersection #1 (62+05.000 to 62+05.000 ), Inside median width (73.00 feet) is greater than specified boundaries (50.00 feet); adjusted in CMF calculations.<br></td>
+</tr>
+<tr><!-- b1 (body)  -->
+<td align="right" style="color: #000000; background-color: #ffffff" title="Segment starting location">62+05.000<br></td>
+<td align="right" style="color: #000000; background-color: #ffffff" title="Segment ending location">62+05.000<br></td>
+<td align="left" style="color: #000000; background-color: #ffffff" title="Message body">for intersection #1 (62+05.000 to 62+05.000 ), Outside median width (56.53 feet) is greater than specified boundaries (50.00 feet); adjusted in CMF calculations.<br></td>
+</tr>
+</tbody>
+</table><a name="_p28"></a>
+<p><br></p>
+<br><table width="100%" border="0" cellspacing="0" cellpadding="4"> <!-- bottom region -->
+<tbody><tr><td width="33%" align="left">&nbsp;</td><td width="33%" align="center"><a title="link to top of this page" href="file:///C:/work/programs/IHSDM%2016/IHSDM16.0/users/rikerm/Projects_V5/p174/r1/e1/evaluation.1.report.htm#_top">[Top]</a></td><td width="33%" align="right">&nbsp;</td></tr></tbody></table>
+
+
+</body></html>
